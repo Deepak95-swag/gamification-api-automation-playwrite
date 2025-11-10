@@ -5,7 +5,7 @@ export class APIService {
         private request: APIRequestContext,
         private baseUrl = process.env.BASE_URL,
         private clientId = process.env.CLIENT_ID,
-        private token = process.env.BEARER_PROJECT_TOKEN
+        private token = process.env.BEARER_ADMIN_TOKEN
     ) { }
 
     private getHeaders() {

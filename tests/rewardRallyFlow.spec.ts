@@ -10,14 +10,11 @@ test.describe.serial('RewardRally Complete Flow', () => {
     let userId: string;
 
     test('1. Create Project', async ({ request }) => {
-        const token = process.env.BEARER_PROJECT_TOKEN;
-        test.skip(!token, 'BEARER_PROJECT_TOKEN not set');
-
         const api = new APIService(request);
         const suffix = makeRandomSuffix();
         const name = `Playwright automation ${suffix}`;
         const description = `Playwright automation ${suffix}`;
-        
+
         // Create a new project
         const createResponse = await api.createProject(name, description);
         expect(createResponse.data).toBeTruthy();
@@ -27,7 +24,7 @@ test.describe.serial('RewardRally Complete Flow', () => {
         const projectList = await api.listProjects();
         const projects = projectList.data.Items[0]?.projects || [];
         expect(projects.length).toBeGreaterThan(0);
-        
+
         // Store the last created project's ID
         const lastProject = projects[projects.length - 1];
         expect(lastProject.name).toBe(name);
@@ -41,13 +38,11 @@ test.describe.serial('RewardRally Complete Flow', () => {
     });
 
     test('2. Create Application', async ({ request }) => {
-        const token = process.env.BEARER_PROJECT_TOKEN;
-        test.skip(!token, 'BEARER_PROJECT_TOKEN not set');
         expect(projectId, 'Project ID from previous step is required').toBeTruthy();
 
         const api = new APIService(request);
         const suffix = makeRandomSuffix();
-        
+
         // Create application using project ID from previous step
         const response = await api.createApplication(
             projectId,
@@ -69,13 +64,11 @@ test.describe.serial('RewardRally Complete Flow', () => {
     });
 
     test('3. Create Game Action', async ({ request }) => {
-        const token = process.env.BEARER_PROJECT_TOKEN;
-        test.skip(!token, 'BEARER_PROJECT_TOKEN not set');
         expect(applicationId, 'Application ID from previous step is required').toBeTruthy();
 
         const api = new APIService(request);
         const suffix = makeRandomSuffix();
-        
+
         // Create game action using application ID from previous step
         const response = await api.createGameAction(
             applicationId,
@@ -98,15 +91,14 @@ test.describe.serial('RewardRally Complete Flow', () => {
     });
 
     test('4. Create User', async ({ request }) => {
-        const token = process.env.BEARER_PROJECT_TOKEN;
-        test.skip(!token, 'BEARER_PROJECT_TOKEN not set');
+
         expect(applicationId, 'Application ID from previous step is required').toBeTruthy();
 
         const api = new APIService(request);
         const suffix = makeRandomSuffix();
         userId = `user_${suffix}`;
         const userName = `Test User ${suffix}`;
-        
+
         // Create user with application ID from previous step
         const response = await api.createUser(
             applicationId,
@@ -128,13 +120,12 @@ test.describe.serial('RewardRally Complete Flow', () => {
     });
 
     test('5. Trigger Game Action for User', async ({ request }) => {
-        const token = process.env.BEARER_PROJECT_TOKEN;
-        test.skip(!token, 'BEARER_PROJECT_TOKEN not set');
+
         expect(gameActionId, 'Game Action ID from previous step is required').toBeTruthy();
         expect(userId, 'User ID from previous step is required').toBeTruthy();
 
         const api = new APIService(request);
-        
+
         // Trigger game action for the user
         const response = await api.triggerGameAction(
             gameActionId,
