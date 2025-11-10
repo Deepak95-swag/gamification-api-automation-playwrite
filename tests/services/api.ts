@@ -126,4 +126,57 @@ export class APIService {
         );
         return await response.json();
     }
+
+    async createLookupItem(applicationId: string, name: string, source = 'upload'): Promise<any> {
+        const payload = {
+            applicationId,
+            name,
+            source
+        };
+
+        const response = await this.request.post(
+            `${this.baseUrl}/v1/lookupItem`,
+            {
+                headers: this.getHeaders(),
+                data: payload
+            }
+        );
+        return await response.json();
+    }
+
+    async createLookupValue(value: string, lookupItemId: string, sourceImgUrl: string, imageAnimationUrl = ''): Promise<any> {
+        const payload = {
+            value,
+            lookupItemId,
+            sourceImgUrl,
+            imageAnimationUrl
+        };
+
+        const response = await this.request.post(
+            `${this.baseUrl}/v1/lookupValue`,
+            {
+                headers: this.getHeaders(),
+                data: payload
+            }
+        );
+        return await response.json();
+    }
+
+    async createPrivilegeStage(lookupValueId: string, points: number, description: string, applicationId: string): Promise<any> {
+        const payload = {
+            lookupValue: lookupValueId,
+            points,
+            description,
+            application: applicationId
+        };
+
+        const response = await this.request.post(
+            `${this.baseUrl}/v1/privilegeStage`,
+            {
+                headers: this.getHeaders(),
+                data: payload
+            }
+        );
+        return await response.json();
+    }
 }

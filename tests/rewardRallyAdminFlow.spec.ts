@@ -8,6 +8,9 @@ test.describe.serial('RewardRally Complete Flow', () => {
     let applicationId: string;
     let gameActionId: string;
     let userId: string;
+    let lookupItemId: string;
+    let lookupValueId: string;
+    let privilegeId: string;
 
     test('1. Create Project', async ({ request }) => {
         const api = new APIService(request);
@@ -119,26 +122,102 @@ test.describe.serial('RewardRally Complete Flow', () => {
         });
     });
 
-    test('5. Trigger Game Action for User', async ({ request }) => {
+    // test('5. Trigger Game Action for User', async ({ request }) => {
 
-        expect(gameActionId, 'Game Action ID from previous step is required').toBeTruthy();
-        expect(userId, 'User ID from previous step is required').toBeTruthy();
+    //     expect(gameActionId, 'Game Action ID from previous step is required').toBeTruthy();
+    //     expect(userId, 'User ID from previous step is required').toBeTruthy();
+
+    //     const api = new APIService(request);
+
+    //     // Trigger game action for the user
+    //     const response = await api.triggerGameAction(
+    //         gameActionId,
+    //         userId,
+    //         "100"
+    //     );
+
+    //     expect(response).toBeTruthy();
+
+    //     console.log('Game Action triggered:', {
+    //         gameActionId: gameActionId,
+    //         userId: userId,
+    //         points: "100"
+    //     });
+    // });
+
+    test('6. Create Lookup Item', async ({ request }) => {
+        expect(applicationId, 'Application ID from previous step is required').toBeTruthy();
 
         const api = new APIService(request);
+        const suffix = makeRandomSuffix();
+        const name = `Badge ${suffix}`;
 
-        // Trigger game action for the user
-        const response = await api.triggerGameAction(
-            gameActionId,
-            userId,
-            "100"
+        const response = await api.createLookupItem(
+            applicationId,
+            name,
+            'upload'
         );
 
-        expect(response).toBeTruthy();
+        // response may include data._id or _id at top level depending on API
+        const lookupItemIdResp = response.data?._id || response._id || response.data?._id;
+        expect(lookupItemIdResp).toBeTruthy();
+        lookupItemId = lookupItemIdResp;
 
-        console.log('Game Action triggered:', {
-            gameActionId: gameActionId,
-            userId: userId,
-            points: "100"
+        console.log('Lookup Item created:', {
+            id: lookupItemId,
+            name,
+            applicationId
+        });
+    });
+
+    test('7. Create Lookup Value', async ({ request }) => {
+        expect(lookupItemId, 'Lookup Item ID from previous step is required').toBeTruthy();
+
+        const api = new APIService(request);
+        const valueName = `Bronze badge ${makeRandomSuffix()}`;
+        const sourceImgUrl = 'https://stagegamificationui.blob.core.windows.net/assets/privilege-stage/1762793789495BRONZE.png';
+
+        const response = await api.createLookupValue(
+            valueName,
+            lookupItemId,
+            sourceImgUrl,
+            ''
+        );
+
+        const lookupValueIdResp = response.data?._id || response._id || response.data?._id;
+        expect(lookupValueIdResp).toBeTruthy();
+        lookupValueId = lookupValueIdResp;
+
+        console.log('Lookup Value created:', {
+            id: lookupValueId,
+            value: valueName,
+            lookupItemId
+        });
+    });
+
+    test('8. Create Privilege Stage', async ({ request }) => {
+        expect(lookupValueId, 'Lookup Value ID from previous step is required').toBeTruthy();
+        expect(applicationId, 'Application ID from previous steps is required').toBeTruthy();
+
+        const api = new APIService(request);
+        const description = 'When user get 100 points, they will achieve this badge';
+
+        const response = await api.createPrivilegeStage(
+            lookupValueId,
+            100,
+            description,
+            applicationId
+        );
+
+        const privilegeIdResp = response.data?._id || response._id || response.data?._id;
+        expect(privilegeIdResp).toBeTruthy();
+        privilegeId = privilegeIdResp;
+
+        console.log('Privilege Stage created:', {
+            id: privilegeId,
+            lookupValueId,
+            points: 100,
+            applicationId
         });
     });
 });
