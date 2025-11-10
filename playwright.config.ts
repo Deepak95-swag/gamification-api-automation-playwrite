@@ -14,7 +14,7 @@ export default defineConfig({
     },
     fullyParallel: false,
     testMatch: [
-        '**/rewardRallyFlow.spec.ts',
+        '**/rewardRallyAdminFlow.spec.ts',
     ],
     reporter: [['list'], ['html']]
 });
