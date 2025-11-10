@@ -68,7 +68,7 @@ export class APIService {
     async createGameAction(applicationId: string, name: string): Promise<any> {
         const payload = {
             name,
-            points: 50,
+            points: 100,
             description: "Created for testing",
             gameCountPerDay: 100,
             minPoints: null,
@@ -80,6 +80,45 @@ export class APIService {
 
         const response = await this.request.post(
             `${this.baseUrl}/v1/gameAction`,
+            {
+                headers: this.getHeaders(),
+                data: payload
+            }
+        );
+        return await response.json();
+    }
+
+    async createUser(applicationId: string, userId: string, userName: string): Promise<any> {
+        const payload = {
+            userId,
+            userName,
+            customAttributes: {
+                Role: ["Employee"]
+            },
+            application: [applicationId]
+        };
+
+        const response = await this.request.post(
+            `${this.baseUrl}/v1/users/addUser`,
+            {
+                headers: this.getHeaders(),
+                data: payload
+            }
+        );
+        return await response.json();
+    }
+
+    async triggerGameAction(gameActionId: string, userId: string, points: string): Promise<any> {
+        const payload = {
+            gameActionId,
+            userId,
+            correspondingUserId: "",
+            correspondingUserApplicationId: "",
+            point: points
+        };
+
+        const response = await this.request.post(
+            `${this.baseUrl}/userCompletedGame/triggerGameAction`,
             {
                 headers: this.getHeaders(),
                 data: payload

@@ -5,18 +5,16 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 export default defineConfig({
-  testDir: './tests',
-  timeout: 30000,
-  workers: 1, // Run tests sequentially
-  use: {
-    baseURL: process.env.BASE_URL,
-    trace: 'on-first-retry'
-  },
-  fullyParallel: false,
-  testMatch: [
-    '**/createProject.spec.ts',
-    '**/createApplication.spec.ts',
-    '**/createGameAction.spec.ts'
-  ],
-  reporter: [['list'], ['html']]
+    testDir: './tests',
+    timeout: 30000,
+    workers: 1, // Run tests sequentially
+    use: {
+        baseURL: process.env.BASE_URL,
+        trace: 'on-first-retry'
+    },
+    fullyParallel: false,
+    testMatch: [
+        '**/rewardRallyFlow.spec.ts',
+    ],
+    reporter: [['list'], ['html']]
 });
