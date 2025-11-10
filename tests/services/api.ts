@@ -4,6 +4,7 @@ export class APIService {
     constructor(
         private request: APIRequestContext,
         private baseUrl = process.env.BASE_URL,
+        private redemptionUrl = process.env.REDEMPTION_URL,
         private clientId = process.env.CLIENT_ID,
         private token = process.env.BEARER_ADMIN_TOKEN
     ) { }
@@ -172,6 +173,53 @@ export class APIService {
 
         const response = await this.request.post(
             `${this.baseUrl}/v1/privilegeStage`,
+            {
+                headers: this.getHeaders(),
+                data: payload
+            }
+        );
+        return await response.json();
+    }
+
+    async createVipTier(
+        name: string,
+        tierLevel: number,
+        description: string,
+        badges: string[],
+        imageUrl: string,
+        benefits: { xFactor: number; bonusPoints: number; minDiscountValue: number; maxDiscountValue: number },
+        applicationId: string
+    ): Promise<any> {
+        const payload = {
+            name,
+            tierLevel,
+            description,
+            badges,
+            imageUrl,
+            benefits,
+            application: applicationId
+        };
+
+        const response = await this.request.post(
+            `${this.baseUrl}/v1/vipTiers`,
+            {
+                headers: this.getHeaders(),
+                data: payload
+            }
+        );
+        return await response.json();
+    }
+
+    async createVirtualMoney(name: string, value: number, imageUrl: string, gamificationApplicationId: string): Promise<any> {
+        const payload = {
+            name,
+            value,
+            imageUrl,
+            gamificationApplicationId
+        };
+
+        const response = await this.request.post(
+            `${this.redemptionUrl}/api/VirtualMoney/addOrUpdate`,
             {
                 headers: this.getHeaders(),
                 data: payload

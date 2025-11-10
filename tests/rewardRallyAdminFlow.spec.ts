@@ -11,6 +11,8 @@ test.describe.serial('RewardRally Complete Flow', () => {
     let lookupItemId: string;
     let lookupValueId: string;
     let privilegeId: string;
+    let vipTierId: string;
+    let virtualMoneyId: string;
 
     test('1. Create Project', async ({ request }) => {
         const api = new APIService(request);
@@ -122,30 +124,7 @@ test.describe.serial('RewardRally Complete Flow', () => {
         });
     });
 
-    // test('5. Trigger Game Action for User', async ({ request }) => {
-
-    //     expect(gameActionId, 'Game Action ID from previous step is required').toBeTruthy();
-    //     expect(userId, 'User ID from previous step is required').toBeTruthy();
-
-    //     const api = new APIService(request);
-
-    //     // Trigger game action for the user
-    //     const response = await api.triggerGameAction(
-    //         gameActionId,
-    //         userId,
-    //         "100"
-    //     );
-
-    //     expect(response).toBeTruthy();
-
-    //     console.log('Game Action triggered:', {
-    //         gameActionId: gameActionId,
-    //         userId: userId,
-    //         points: "100"
-    //     });
-    // });
-
-    test('6. Create Lookup Item', async ({ request }) => {
+    test('5. Create Lookup Item', async ({ request }) => {
         expect(applicationId, 'Application ID from previous step is required').toBeTruthy();
 
         const api = new APIService(request);
@@ -170,7 +149,7 @@ test.describe.serial('RewardRally Complete Flow', () => {
         });
     });
 
-    test('7. Create Lookup Value', async ({ request }) => {
+    test('6. Create Lookup Value', async ({ request }) => {
         expect(lookupItemId, 'Lookup Item ID from previous step is required').toBeTruthy();
 
         const api = new APIService(request);
@@ -195,7 +174,7 @@ test.describe.serial('RewardRally Complete Flow', () => {
         });
     });
 
-    test('8. Create Privilege Stage', async ({ request }) => {
+    test('7. Create Privilege Stage', async ({ request }) => {
         expect(lookupValueId, 'Lookup Value ID from previous step is required').toBeTruthy();
         expect(applicationId, 'Application ID from previous steps is required').toBeTruthy();
 
@@ -218,6 +197,99 @@ test.describe.serial('RewardRally Complete Flow', () => {
             lookupValueId,
             points: 100,
             applicationId
+        });
+    });
+
+    test('8. Create VIP Tier', async ({ request }) => {
+        expect(privilegeId, 'Privilege ID from previous step is required').toBeTruthy();
+        expect(applicationId, 'Application ID is required').toBeTruthy();
+
+        const api = new APIService(request);
+        const name = `VIPE TIER LEVEL 1 ${makeRandomSuffix()}`;
+        const tierLevel = 1;
+        const description = '<p>created this for testing</p>';
+        // Use created privilegeId as badge
+        const badges = [privilegeId];
+        const imageUrl = '';
+        const benefits = {
+            xFactor: 2,
+            bonusPoints: 100,
+            minDiscountValue: 1,
+            maxDiscountValue: 100
+        };
+
+        const response = await api.createVipTier(
+            name,
+            tierLevel,
+            description,
+            badges,
+            imageUrl,
+            benefits,
+            applicationId
+        );
+
+        const vipTierIdResp = response.data?._id || response._id || response.data?._id;
+        expect(vipTierIdResp).toBeTruthy();
+        vipTierId = vipTierIdResp;
+
+        console.log('VIP Tier created:', {
+            id: vipTierId,
+            name,
+            tierLevel,
+            badges,
+            applicationId
+        });
+    });
+
+    test('9. Create Virtual Money', async ({ request }) => {
+        expect(applicationId, 'Application ID is required').toBeTruthy();
+
+        const api = new APIService(request);
+        const name = 'VIRTUAL MONEY';
+        const value = 1;
+        const imageUrl = 'https://stagegamificationui.blob.core.windows.net/assets/virtual-money/1762795338897COINS.png';
+
+        const response = await api.createVirtualMoney(
+            name,
+            value,
+            imageUrl,
+            applicationId
+        );
+
+        const vmIdResp = response.data?._id || response._id || response.data?._id || response.data?._id;
+        // endpoint may return the created entity or success message; ensure truthy response
+        expect(response).toBeTruthy();
+        if (vmIdResp) {
+            virtualMoneyId = vmIdResp;
+        }
+
+        console.log('Virtual Money created/updated:', {
+            id: virtualMoneyId || '(no id returned)',
+            name,
+            value,
+            applicationId
+        });
+    });
+
+    test('10. Trigger Game Action for User', async ({ request }) => {
+        expect(gameActionId, 'Game Action ID from previous step is required').toBeTruthy();
+        expect(userId, 'User ID from previous step is required').toBeTruthy();
+
+        const api = new APIService(request);
+
+        // Trigger game action for the user
+        const response = await api.triggerGameAction(
+            gameActionId,
+            userId,
+            "100"
+        );
+
+        expect(response).toBeTruthy();
+
+        console.log('Game Action triggered (final):', {
+            gameActionId: gameActionId,
+            userId: userId,
+            points: "100"
         });
     });
 });
